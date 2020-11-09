@@ -21,36 +21,34 @@ public abstract class BaseMaterial extends Material {
 
     @Override
     public float sampleDiffuseOutput(BaseRandom random, PointData pointData, Float3 input, Float3 output) {
-        random.nextTarget();
-        output.set(random.float3);
         float normalX = pointData.normalX;
         float normalY = pointData.normalY;
         float normalZ = pointData.normalZ;
         float in = normalX * input.x + normalY * input.y + normalZ * input.z;
-        float out = normalX * output.x + normalY * output.y + normalZ * output.z;
-        if (in > 0 == out > 0) {
-            output.x = -output.x;
-            output.y = -output.y;
-            output.z = -output.z;
+        if (in > 0) {
+            normalX = -normalX;
+            normalY = -normalY;
+            normalZ = -normalZ;
         }
-        return 0.5f / (float) Math.PI;
+        float pdf = random.nextCosineHalfTarget(normalX, normalY, normalZ);
+        output.set(random.float3);
+        return pdf;
     }
 
     @Override
     public float sampleDiffuseInput(BaseRandom random, PointData pointData, Float3 output, Float3 input) {
-        random.nextTarget();
-        input.set(random.float3);
         float normalX = pointData.normalX;
         float normalY = pointData.normalY;
         float normalZ = pointData.normalZ;
-        float in = normalX * input.x + normalY * input.y + normalZ * input.z;
         float out = normalX * output.x + normalY * output.y + normalZ * output.z;
-        if (in > 0 == out > 0) {
-            input.x = -input.x;
-            input.y = -input.y;
-            input.z = -input.z;
+        if (out > 0) {
+            normalX = -normalX;
+            normalY = -normalY;
+            normalZ = -normalZ;
         }
-        return 0.5f / (float) Math.PI;
+        float pdf = random.nextCosineHalfTarget(normalX, normalY, normalZ);
+        input.set(random.float3);
+        return pdf;
     }
 
     @Override

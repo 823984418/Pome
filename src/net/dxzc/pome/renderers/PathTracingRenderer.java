@@ -2,16 +2,30 @@ package net.dxzc.pome.renderers;
 
 import net.dxzc.pome.*;
 
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+
 public class PathTracingRenderer extends Renderer {
 
-    public int minCount = 10;
+    public static final boolean DEBUG = true;
+
+    public int minCount = 20;
     public int maxCount = 10000;
-    public float error = 0.05f;
+    public float error = 0.1f;
     public int maxDepth = 1000;
 
 
     @Override
     public void render(Scene scene, FrameBuffer frameBuffer) {
+        FrameBuffer debugBuffer0 = null;
+        FrameBuffer debugBuffer1 = null;
+        FrameBuffer debugBuffer2 = null;
+        if (DEBUG) {
+            debugBuffer0 = new FrameBuffer(frameBuffer.width, frameBuffer.height);
+            debugBuffer1 = new FrameBuffer(frameBuffer.width, frameBuffer.height);
+            debugBuffer2 = new FrameBuffer(frameBuffer.width, frameBuffer.height);
+        }
         Float3 var1 = new Float3();
         Float3 var2 = new Float3();
         Float3 var3 = new Float3();
@@ -42,17 +56,27 @@ public class PathTracingRenderer extends Renderer {
         int width = frameBuffer.width;
         int height = frameBuffer.height;
         for (int y = 0; y < height; y++) {
-            System.out.println(y * 100 / height);
+            if (DEBUG) {
+                System.out.printf("%2.1f\n", y * 100f / height);
+            }
             for (int x = 0; x < width; x++) {
                 // 计算标准化设备坐标
-                float dx = 2f * x / width - 1;
-                float dy = 1 - 2f * y / height;
+                float sdx = 2f * x / width - 1;
+                float sdy = 1 - 2f * y / height;
 
                 float sumR = 0, sumG = 0, sumB = 0;
                 float sum = 0;
                 int count = 0;
                 float square = 0;
-                while (count < minCount || (square - sum * sum / count) > (count - 1) * count * vars && count < maxCount) {
+
+                int depths = 0;
+
+                while (count < minCount || (square * count - sum * sum) > Math.abs(sum) * (count - 1) * count * vars && count < maxCount) {
+                    float rx = random.nextFloat() * 2 / width;
+                    float ry = random.nextFloat() * 2 / height;
+                    float dx = sdx + rx;
+                    float dy = sdy + ry;
+
                     // 采样得到的颜色
                     float r = 0, g = 0, b = 0;
 
@@ -207,6 +231,9 @@ public class PathTracingRenderer extends Renderer {
 
 
                         depth++;
+                        if (DEBUG) {
+                            depths++;
+                        }
 
                         // 计算轮盘赌概率
                         float pC = Math.min(((pR + pG + pB) / 3 + 1) / 2, 1);
@@ -248,8 +275,26 @@ public class PathTracingRenderer extends Renderer {
                     sum += p;
                     count++;
                     square += p * p;
+
                 }
                 frameBuffer.set(x, y, sumR / count, sumG / count, sumB / count);
+                if (DEBUG) {
+                    float debug0 = 0.001f * count;
+                    float debug1 = 0.1f * (float) depths / count;
+                    float debug2 = (float) Math.sqrt((square * count - sum * sum) / ((count - 1) * count * Math.abs(sum)));
+                    debugBuffer0.set(x, y, debug0, debug0, debug0);
+                    debugBuffer1.set(x, y, debug1, debug1, debug1);
+                    debugBuffer2.set(x, y, debug2, debug2, debug2);
+                }
+            }
+        }
+        if (DEBUG) {
+            try {
+                ImageIO.write(debugBuffer0.toImage(), "png", new File("debug0.png"));
+                ImageIO.write(debugBuffer1.toImage(), "png", new File("debug1.png"));
+                ImageIO.write(debugBuffer2.toImage(), "png", new File("debug2.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }

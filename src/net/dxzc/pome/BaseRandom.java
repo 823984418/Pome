@@ -388,13 +388,60 @@ public class BaseRandom {
 
     public void nextTarget() {
         float r = nextFloat() * 2 * (float) Math.PI;
-        float z = 1 - 2 * nextFloat();
+        float z = nextFloat() * 2 - 1;
         float x = (float) Math.sin(r);
         float y = (float) Math.cos(r);
         float h = (float) Math.sqrt(1 - z * z);
         float3.x = x * h;
         float3.y = y * h;
         float3.z = z;
+    }
+
+    public float nextCosineTarget() {
+        float pdf = nextCosineHalfTarget();
+        if (nextBoolean()) {
+            float3.z = -float3.z;
+        }
+        return pdf / 2;
+    }
+
+    public float nextCosineHalfTarget() {
+        float t = nextFloat() * 2 * (float) Math.PI;
+        float r2 = nextFloat();
+        float r = (float) Math.sqrt(r2);
+        float3.x = r * (float) Math.sin(t);
+        float3.y = r * (float) Math.cos(t);
+        float3.z = (float) Math.sqrt(1 - r2);
+        return float3.z / (float) Math.PI;
+    }
+
+    public float nextCosineHalfTarget(float normalX, float normalY, float normalZ) {
+        float normal = (float) Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+        normalX /= normal;
+        normalY /= normal;
+        normalZ /= normal;
+        nextTarget();
+        float x = float3.x;
+        float y = float3.y;
+        float z = float3.z;
+        float r = x * normalX + y * normalY + z * normalZ;
+
+        r = Math.abs(r);
+        x -= r * normalX;
+        y -= r * normalY;
+        z -= r * normalZ;
+        float pR = (float) Math.sqrt(r / (1 - r * r));
+        x *= pR;
+        y *= pR;
+        z *= pR;
+        r = (float) Math.sqrt(1 - r);
+        x += r * normalX;
+        y += r * normalY;
+        z += r * normalZ;
+        float3.x = x;
+        float3.y = y;
+        float3.z = z;
+        return r / (float) Math.PI * 2 / 3;
     }
 
 

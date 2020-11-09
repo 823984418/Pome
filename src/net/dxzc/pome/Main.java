@@ -43,7 +43,17 @@ public class Main {
         scene.rightward.set(-w, 0, 0);
         scene.upward.set(0, w * width / height, 0);
         PathTracingRenderer renderer = new PathTracingRenderer();
+        long begin = System.nanoTime();
         renderer.render(scene, frame);
+        long end = System.nanoTime();
+        long d = end - begin;
+        long us = d / 1000;
+        long ms = us / 1000;
+        long s = ms / 1000;
+        long min = s / 60;
+        long h = min / 60;
+        long day = h / 24;
+        System.out.println(day + "-" + h % 24 + ":" + min % 60 + ":" + s % 60 + "-" + ms % 1000);
         ImageIO.write(frame.toImage(), "png", new File("D:\\code\\Pome\\1.png"));
     }
 
