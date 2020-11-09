@@ -2,6 +2,7 @@ package net.dxzc.pome;
 
 
 import net.dxzc.pome.materials.DiffuseMaterial;
+import net.dxzc.pome.renderers.MultiThreadPathTracingRenderer;
 import net.dxzc.pome.renderers.PathTracingRenderer;
 import net.dxzc.pome.scenes.BvhScene;
 
@@ -42,7 +43,7 @@ public class Main {
         float w = 0.35f;
         scene.rightward.set(-w, 0, 0);
         scene.upward.set(0, w * width / height, 0);
-        PathTracingRenderer renderer = new PathTracingRenderer();
+        Renderer renderer = new MultiThreadPathTracingRenderer();
         long begin = System.nanoTime();
         renderer.render(scene, frame);
         long end = System.nanoTime();

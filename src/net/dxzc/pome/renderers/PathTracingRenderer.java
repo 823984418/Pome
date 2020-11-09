@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class PathTracingRenderer extends Renderer {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public int minCount = 20;
     public int maxCount = 10000;
@@ -236,7 +236,7 @@ public class PathTracingRenderer extends Renderer {
                         }
 
                         // 计算轮盘赌概率
-                        float pC = Math.min(((pR + pG + pB) / 3 + 1) / 2, 1);
+                        float pC = Math.min((float) Math.pow((pR + pG + pB) / 3, 0.1), 1);
 
                         // 测试轮盘赌和最大深度
                         if (random.nextFloat() > pC || depth >= maxDepth) {
