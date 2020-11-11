@@ -15,20 +15,7 @@ public class BvhScene extends BaseScene {
         }
     }
 
-    public float backgroundR;
-
-    public float backgroundG;
-
-    public float backgroundB;
-
     private Node rootNode;
-
-    @Override
-    public void getBackground(Float3 background) {
-        background.x = backgroundR;
-        background.y = backgroundG;
-        background.z = backgroundB;
-    }
 
     @Override
     public float sampleLight(BaseRandom random, PointBuffer pointBuffer) {
@@ -252,7 +239,7 @@ public class BvhScene extends BaseScene {
                         if (leftNear < rightNear) {
                             left.intersectNoCheck(ray, pointBuffer);
                             if (oldTime != ray.maxTime) {
-                                if (!Float.isNaN(right.near(ray))) {
+                                if (Float.isNaN(right.near(ray))) {
                                     return;
                                 }
                             }

@@ -10,8 +10,8 @@ public class PathTracingRenderer extends Renderer {
 
     public static final boolean DEBUG = false;
 
-    public int minCount = 20;
-    public int maxCount = 10000;
+    public int minCount = 15;
+    public int maxCount = 1000;
     public float error = 0.1f;
     public int maxDepth = 1000;
 

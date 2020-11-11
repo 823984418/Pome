@@ -12,6 +12,12 @@ public abstract class BaseScene extends Scene {
         rightward.set(1, 0, 0);
     }
 
+    public float backgroundR;
+
+    public float backgroundG;
+
+    public float backgroundB;
+
     public final Float3 camera = new Float3();
 
     public final Float3 forward = new Float3();
@@ -19,6 +25,13 @@ public abstract class BaseScene extends Scene {
     public final Float3 upward = new Float3();
 
     public final Float3 rightward = new Float3();
+
+    @Override
+    public void getBackground(Float3 background) {
+        background.x = backgroundR;
+        background.y = backgroundG;
+        background.z = backgroundB;
+    }
 
     @Override
     public void getCamera(Float3 camera) {
