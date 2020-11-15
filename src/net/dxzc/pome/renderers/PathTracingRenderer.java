@@ -8,12 +8,13 @@ import java.io.IOException;
 
 public class PathTracingRenderer extends Renderer {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
-    public int minCount = 15;
+    public int minCount = 100;
     public int maxCount = 1000;
-    public float error = 0.1f;
-    public int maxDepth = 1000;
+    public float error = 0.15f;
+    public int maxDepth = 20;
+    public float diffuseMax = 1;
 
 
     @Override
@@ -52,6 +53,7 @@ public class PathTracingRenderer extends Renderer {
         int maxCount = this.maxCount;
         float vars = error * error;
         int maxDepth = this.maxDepth;
+        float diffuseMax = this.diffuseMax;
 
         int width = frameBuffer.width;
         int height = frameBuffer.height;
@@ -68,6 +70,7 @@ public class PathTracingRenderer extends Renderer {
                 float sum = 0;
                 int count = 0;
                 float square = 0;
+
 
                 int depths = 0;
 
@@ -95,6 +98,10 @@ public class PathTracingRenderer extends Renderer {
 
                     // 当前深度
                     int depth = 0;
+
+                    float dR = 0;
+                    float dG = 0;
+                    float dB = 0;
 
                     for (; ; ) {
 
@@ -129,6 +136,14 @@ public class PathTracingRenderer extends Renderer {
                             r += var2.x;
                             g += var2.y;
                             b += var2.z;
+                        } else {
+                            if (dR > diffuseMax || dG > diffuseMax || dB > diffuseMax) {
+                                var1.set(-directionX, -directionY, -directionZ);
+                                mesh.getLight(pointData, var1, var2);
+                                r += pR * Math.max(dR - diffuseMax, 0) / dR * var2.x;
+                                g += pG * Math.max(dG - diffuseMax, 0) / dG * var2.y;
+                                b += pB * Math.max(dB - diffuseMax, 0) / dB * var2.z;
+                            }
                         }
 
                         // 碰撞坐标
@@ -181,8 +196,7 @@ public class PathTracingRenderer extends Renderer {
                                 lightNormalZ *= invLightNormal;
                                 float lightDirs = lightDirX * lightDirX + lightDirY * lightDirY + lightDirZ * lightDirZ;
                                 float lightDot = lightDirX * lightNormalX + lightDirY * lightNormalY + lightDirZ * lightNormalZ;
-                                float normalDot = normalX * lightDirX + normalY * lightDirY + normalZ * lightDirZ;
-                                float pow = Math.abs(normalDot * lightDot) / (lightDirs * lightDirs) / lightPdf;
+                                float pow = Math.abs(lightDot) / ((float) Math.sqrt(lightDirs) * lightDirs) / lightPdf;
 
                                 // 计算光源亮度
                                 var1.set(-lightDirX, -lightDirY, -lightDirZ);
@@ -197,9 +211,9 @@ public class PathTracingRenderer extends Renderer {
                                 mesh.getDiffuse(pointData, var1, var2, var3);
 
                                 // 计算光源贡献
-                                r += pR * var3.x * lightR * pow;
-                                g += pG * var3.y * lightG * pow;
-                                b += pB * var3.z * lightB * pow;
+                                r += pR * Math.min(var3.x, diffuseMax) * lightR * pow;
+                                g += pG * Math.min(var3.y, diffuseMax) * lightG * pow;
+                                b += pB * Math.min(var3.z, diffuseMax) * lightB * pow;
                             }
                         }
 
@@ -223,11 +237,13 @@ public class PathTracingRenderer extends Renderer {
                         var2.y = -directionY;
                         var2.z = -directionZ;
                         mesh.getDiffuse(pointData, var1, var2, var3);
-                        float pow = Math.abs(normalX * nextDirectionX + normalY * nextDirectionY + normalZ * nextDirectionZ)
-                                / nextDirection / nextPdf;
-                        pR *= var3.x * pow;
-                        pG *= var3.y * pow;
-                        pB *= var3.z * pow;
+                        float pow = 1 / nextPdf;
+                        dR = var3.x;
+                        dG = var3.y;
+                        dB = var3.z;
+                        pR *= dR * pow;
+                        pG *= dG * pow;
+                        pB *= dB * pow;
 
 
                         depth++;

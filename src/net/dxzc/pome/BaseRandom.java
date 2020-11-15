@@ -426,6 +426,20 @@ public class BaseRandom {
         float z = float3.z;
         float r = x * normalX + y * normalY + z * normalZ;
 
+
+        if (false) {
+            if (r < 0) {
+                x = -x;
+                y = -y;
+                z = -z;
+            }
+            float3.x = x;
+            float3.y = y;
+            float3.z = z;
+            return 0.5f / (float) Math.PI;
+        }
+
+
         r = Math.abs(r);
         x -= r * normalX;
         y -= r * normalY;
@@ -441,7 +455,7 @@ public class BaseRandom {
         float3.x = x;
         float3.y = y;
         float3.z = z;
-        return r / (float) Math.PI * 2 / 3;
+        return r / (float) Math.PI;
     }
 
 

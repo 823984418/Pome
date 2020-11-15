@@ -70,15 +70,16 @@ public class Sphere extends BaseMesh {
             return;
         }
         delta = (float) Math.sqrt(delta);
-        float t = (-b - delta )/ (2 * a);
+        float t = (-b - delta) / (2 * a);
         if (t > ray.minTime && t < ray.maxTime) {
             ray.maxTime = t;
             pointBuffer.mesh = this;
             pointBuffer.buffer1 = longX + directionX * t;
             pointBuffer.buffer2 = longY + directionY * t;
             pointBuffer.buffer3 = longZ + directionZ * t;
+            return;
         }
-        t = (-b + delta)/ (2*a);
+        t = (-b + delta) / (2 * a);
         if (t > ray.minTime && t < ray.maxTime) {
             ray.maxTime = t;
             pointBuffer.mesh = this;
@@ -108,7 +109,12 @@ public class Sphere extends BaseMesh {
             return false;
         }
         delta = (float) Math.sqrt(delta);
-        return -b - delta > 0 || -b + delta > 0;
+        float t1 = (-b - delta) / (2 * a);
+        if (t1 > ray.minTime && t1 < ray.maxTime) {
+            return true;
+        }
+        float t2 = (-b + delta) / (2 * a);
+        return t2 > ray.minTime && t2 < ray.maxTime;
     }
 
     @Override

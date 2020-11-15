@@ -24,13 +24,19 @@ public class DiffuseMaterial extends BaseMaterial {
         float normalX = pointData.normalX;
         float normalY = pointData.normalY;
         float normalZ = pointData.normalZ;
-        float in = normalX * input.x + normalY * input.y + normalZ * input.z;
+        float normal = (float) Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+        float inputX = input.x;
+        float inputY = input.y;
+        float inputZ = input.z;
+        float i = (float) Math.sqrt(inputX * inputX + inputY * inputY + inputZ * inputZ);
+        float in = normalX * inputX + normalY * inputY + normalZ * inputZ;
         float out = normalX * output.x + normalY * output.y + normalZ * output.z;
         if (in > 0 ^ out > 0) {
             power.set(color);
-            power.x /= Math.PI;
-            power.y /= Math.PI;
-            power.z /= Math.PI;
+            double n = Math.abs(in) / Math.PI / normal / i;
+            power.x *= n;
+            power.y *= n;
+            power.z *= n;
         } else {
             power.set(0, 0, 0);
         }

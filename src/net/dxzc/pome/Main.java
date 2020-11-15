@@ -2,6 +2,7 @@ package net.dxzc.pome;
 
 
 import net.dxzc.pome.materials.DiffuseMaterial;
+import net.dxzc.pome.materials.MirrorMaterial;
 import net.dxzc.pome.meshs.Sphere;
 import net.dxzc.pome.renderers.DebugRenderer;
 import net.dxzc.pome.renderers.MultiThreadPathTracingRenderer;
@@ -22,6 +23,10 @@ public class Main {
         DiffuseMaterial material = new DiffuseMaterial();
         material.color.set(r, g, b);
         material.light.set(lr, lg, lb);
+        load(meshes, path, material);
+    }
+
+    public static void load(List<Mesh> meshes, String path, Material material) {
         String model = Kits.readFile(path);
         Kits.loadTriangle(meshes, new Scanner(model), material);
     }
@@ -31,14 +36,17 @@ public class Main {
         int height = 512;
         FrameBuffer frame = new FrameBuffer(width, height);
         List<Mesh> list = new LinkedList<>();
+        MirrorMaterial mirror = new MirrorMaterial();
+        mirror.color.set(0.93f, 0.81f, 0.17f);
         load(list, "cornellbox\\light.obj", 0.725f, 0.71f, 0.68f, 47.8348f, 38.5664f, 31.0808f);
         load(list, "cornellbox\\left.obj", 0.63f, 0.065f, 0.05f, 0, 0, 0);
+        //load(list, "cornellbox\\left.obj", mirror);
         load(list, "cornellbox\\right.obj", 0.14f, 0.45f, 0.091f, 0, 0, 0);
         load(list, "cornellbox\\floor.obj", 0.725f, 0.71f, 0.68f, 0, 0, 0);
         //load(list, "cornellbox\\shortbox.obj", 0.725f, 0.71f, 0.68f, 0, 0, 0);
         DiffuseMaterial material = new DiffuseMaterial();
         material.color.set(0.725f, 0.71f, 0.68f);
-        Sphere sphere = new Sphere(material);
+        Sphere sphere = new Sphere(mirror);
         sphere.center.x = 185;
         sphere.center.y = 80;
         sphere.center.z = 169;
