@@ -6,6 +6,10 @@ import java.util.Arrays;
 
 public class BvhScene extends BaseScene {
 
+    public BvhScene(Mesh[] meshes) {
+        this(meshes, 0, meshes.length);
+    }
+
     public BvhScene(Mesh[] meshes, int from, int to) {
         if (meshes == null) {
             throw new NullPointerException();

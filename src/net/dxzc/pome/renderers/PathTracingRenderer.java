@@ -11,7 +11,7 @@ public class PathTracingRenderer extends Renderer {
     public static final boolean DEBUG = true;
 
     public int minCount = 100;
-    public int maxCount = 1000;
+    public int maxCount = 10000;
     public float error = 0.15f;
     public int maxDepth = 20;
     public float diffuseMax = 1;
@@ -58,7 +58,7 @@ public class PathTracingRenderer extends Renderer {
         int width = frameBuffer.width;
         int height = frameBuffer.height;
         for (int y = 0; y < height; y++) {
-            if (DEBUG) {
+            if (true || DEBUG) {
                 System.out.printf("%2.1f\n", y * 100f / height);
             }
             for (int x = 0; x < width; x++) {
@@ -245,7 +245,6 @@ public class PathTracingRenderer extends Renderer {
                         pG *= dG * pow;
                         pB *= dB * pow;
 
-
                         depth++;
                         if (DEBUG) {
                             depths++;
@@ -255,7 +254,7 @@ public class PathTracingRenderer extends Renderer {
                         float pC = Math.min((float) Math.pow((pR + pG + pB) / 3, 0.1), 1);
 
                         // 测试轮盘赌和最大深度
-                        if (random.nextFloat() > pC || depth >= maxDepth) {
+                        if (random.nextFloat() >= pC || depth >= maxDepth) {
                             r += pR * background.x;
                             g += pG * background.z;
                             b += pB * background.z;

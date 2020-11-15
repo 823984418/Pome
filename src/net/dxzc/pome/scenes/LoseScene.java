@@ -6,6 +6,10 @@ import java.util.Arrays;
 
 public class LoseScene extends BaseScene {
 
+    public LoseScene(Mesh[] meshes) {
+        this(meshes, 0, meshes.length);
+    }
+
     public LoseScene(Mesh[] meshes, int from, int to) {
         meshes = this.meshes = Arrays.copyOfRange(meshes, from, to);
         lights = new float[meshes.length];

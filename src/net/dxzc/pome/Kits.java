@@ -1,5 +1,6 @@
 package net.dxzc.pome;
 
+import net.dxzc.pome.materials.DiffuseMaterial;
 import net.dxzc.pome.meshs.Triangle;
 
 import java.io.BufferedInputStream;
@@ -55,6 +56,18 @@ public class Kits {
                     throw new RuntimeException();
             }
         }
+    }
+
+    public static void load(List<Mesh> meshes, String path, float r, float g, float b, float lr, float lg, float lb) {
+        DiffuseMaterial material = new DiffuseMaterial();
+        material.color.set(r, g, b);
+        material.light.set(lr, lg, lb);
+        load(meshes, path, material);
+    }
+
+    public static void load(List<Mesh> meshes, String path, Material material) {
+        String model = readFile(path);
+        loadTriangle(meshes, new Scanner(model), material);
     }
 
 }

@@ -44,9 +44,9 @@ public class Sphere extends BaseMesh {
     @Override
     public float sampleLight(BaseRandom random, PointBuffer pointBuffer) {
         random.nextTarget();
-        pointBuffer.buffer1 = random.float3.x;
-        pointBuffer.buffer2 = random.float3.y;
-        pointBuffer.buffer3 = random.float3.z;
+        pointBuffer.buffer1 = random.float3.x * radius;
+        pointBuffer.buffer2 = random.float3.y * radius;
+        pointBuffer.buffer3 = random.float3.z * radius;
         return 1 / area;
     }
 
