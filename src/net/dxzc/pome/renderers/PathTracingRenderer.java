@@ -8,24 +8,24 @@ import java.io.IOException;
 
 public class PathTracingRenderer extends Renderer {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public int minCount = 100;
     public int maxCount = 10000;
-    public float error = 0.15f;
-    public int maxDepth = 20;
+    public float error = 0.05f;
+    public int maxDepth = 100;
     public float diffuseMax = 1;
 
 
     @Override
-    public void render(Scene scene, FrameBuffer frameBuffer) {
-        FrameBuffer debugBuffer0 = null;
-        FrameBuffer debugBuffer1 = null;
-        FrameBuffer debugBuffer2 = null;
+    public void render(Scene scene, Image image) {
+        Image debugBuffer0 = null;
+        Image debugBuffer1 = null;
+        Image debugBuffer2 = null;
         if (DEBUG) {
-            debugBuffer0 = new FrameBuffer(frameBuffer.width, frameBuffer.height);
-            debugBuffer1 = new FrameBuffer(frameBuffer.width, frameBuffer.height);
-            debugBuffer2 = new FrameBuffer(frameBuffer.width, frameBuffer.height);
+            debugBuffer0 = new Image(image.width, image.height);
+            debugBuffer1 = new Image(image.width, image.height);
+            debugBuffer2 = new Image(image.width, image.height);
         }
         Float3 var1 = new Float3();
         Float3 var2 = new Float3();
@@ -55,8 +55,8 @@ public class PathTracingRenderer extends Renderer {
         int maxDepth = this.maxDepth;
         float diffuseMax = this.diffuseMax;
 
-        int width = frameBuffer.width;
-        int height = frameBuffer.height;
+        int width = image.width;
+        int height = image.height;
         for (int y = 0; y < height; y++) {
             if (true || DEBUG) {
                 System.out.printf("%2.1f\n", y * 100f / height);
@@ -292,7 +292,7 @@ public class PathTracingRenderer extends Renderer {
                     square += p * p;
 
                 }
-                frameBuffer.set(x, y, sumR / count, sumG / count, sumB / count);
+                image.set(x, y, sumR / count, sumG / count, sumB / count);
                 if (DEBUG) {
                     float debug0 = 0.001f * count;
                     float debug1 = 0.1f * (float) depths / count;
@@ -305,9 +305,9 @@ public class PathTracingRenderer extends Renderer {
         }
         if (DEBUG) {
             try {
-                ImageIO.write(debugBuffer0.toImage(), "png", new File("debug0.png"));
-                ImageIO.write(debugBuffer1.toImage(), "png", new File("debug1.png"));
-                ImageIO.write(debugBuffer2.toImage(), "png", new File("debug2.png"));
+                ImageIO.write(ImageHelper.toJavaImage(debugBuffer0), "png", new File("debug0.png"));
+                ImageIO.write(ImageHelper.toJavaImage(debugBuffer1), "png", new File("debug1.png"));
+                ImageIO.write(ImageHelper.toJavaImage(debugBuffer2), "png", new File("debug2.png"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -5,47 +5,28 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-public final class FrameBuffer {
+public class ImageHelper {
 
-    public FrameBuffer(int width, int height) {
-        this.width = width;
-        this.height = height;
-        buffer = new float[width * height * 3];
-    }
-
-    public final int width;
-
-    public final int height;
-
-    public final float[] buffer;
-
-    public void set(int x, int y, float r, float g, float b) {
-        int off = 3 * (x + y * width);
-        buffer[off] = r;
-        buffer[off + 1] = g;
-        buffer[off + 2] = b;
-    }
-
-    private static int value(float v) {
-        return (int) (Math.max(0, Math.min(1, Math.pow(v, 0.6))) * 255);
-    }
-
-    private static int color(float r, float g, float b) {
-        return (0xFF << 24) + (value(r) << 16) + (value(g) << 8) + value(b);
-    }
-
-    public BufferedImage toImage() {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    public static BufferedImage toJavaImage(Image image) {
+        int width = image.width;
+        int height = image.height;
+        float[] buffer = image.buffer;
+        BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         int[] buff = new int[width * height];
         for (int i = 0; i < buff.length; i++) {
-            buff[i] = color(buffer[i * 3], buffer[i * 3 + 1], buffer[i * 3 + 2]);
+            buff[i] = (0xFF << 24)
+                    + ((Math.max(0, Math.min(255, (int) (Math.pow(buffer[i * 3], 0.6) * 256)))) << 16)
+                    + ((Math.max(0, Math.min(255, (int) (Math.pow(buffer[i * 3 + 1], 0.6) * 256)))) << 8)
+                    + (Math.max(0, Math.min(255, (int) (Math.pow(buffer[i * 3 + 2], 0.6) * 256))));
         }
-        image.setRGB(0, 0, width, height, buff, 0, width);
-        return image;
+        out.setRGB(0, 0, width, height, buff, 0, width);
+        return out;
     }
 
-    @Deprecated
-    public void saveAsBmp(OutputStream outputStream) throws IOException {
+
+    public static void writeAsBmp(Image image, OutputStream outputStream) throws IOException {
+        int width = image.width;
+        int height = image.height;
         int size = width * height * 3;
         int fileSize = 54 + size;
         byte[] head = new byte[]{
@@ -66,25 +47,29 @@ public final class FrameBuffer {
                 0, 0, 0, 0,
         };
         outputStream.write(head);
-        float[] buffer = this.buffer;
-        for (int i = 0; i < size; ) {
-            float r = buffer[i++];
-            float g = buffer[i++];
-            float b = buffer[i++];
-            int gr = Math.max(0, Math.min((int) (r * 255), 255));
-            int gg = Math.max(0, Math.min((int) (g * 255), 255));
-            int gb = Math.max(0, Math.min((int) (b * 255), 255));
-            outputStream.write(gr);
-            outputStream.write(gg);
-            outputStream.write(gb);
+        float[] buffer = image.buffer;
+        for (int y = height - 1; y >= 0; y--) {
+            for (int x = 0; x < width; x++) {
+                int i = (x + y * width) * 3;
+                float r = buffer[i];
+                float g = buffer[i + 1];
+                float b = buffer[i + 2];
+                int gr = Math.max(0, Math.min((int) (Math.pow(r, 0.6) * 256), 255));
+                int gg = Math.max(0, Math.min((int) (Math.pow(g, 0.6) * 256), 255));
+                int gb = Math.max(0, Math.min((int) (Math.pow(b, 0.6) * 256), 255));
+                outputStream.write(gb);
+                outputStream.write(gg);
+                outputStream.write(gr);
+            }
         }
     }
 
-    @Deprecated
-    public void saveAsHdr(OutputStream outputStream) throws IOException {
+    public static void writeAsHdr(Image image, OutputStream outputStream) throws IOException {
+        int width = image.width;
+        int height = image.height;
         outputStream.write(("FORMAT=32-bit_rle_rgbe\n\n" +
                 "-Y " + height + " -X " + width + "\n").getBytes(StandardCharsets.US_ASCII));
-        float[] buffer = this.buffer;
+        float[] buffer = image.buffer;
         int size = width * height * 3;
         for (int i = 0; i < size; ) {
             float r = buffer[i++];
@@ -92,7 +77,7 @@ public final class FrameBuffer {
             float b = buffer[i++];
             float v = Math.max(r, Math.max(g, b));
             if (v >= 1e-32f) {
-                int e = Math.getExponent(v);
+                int e = Math.getExponent(v) + 1;
                 double m = 256 / Math.pow(2, e);
                 outputStream.write((int) (r * m));
                 outputStream.write((int) (g * m));

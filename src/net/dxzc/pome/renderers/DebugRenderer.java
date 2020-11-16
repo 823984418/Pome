@@ -5,7 +5,7 @@ import net.dxzc.pome.*;
 public class DebugRenderer extends Renderer {
 
     @Override
-    public void render(Scene scene, FrameBuffer frameBuffer) {
+    public void render(Scene scene, Image image) {
 
         Float3 var1 = new Float3();
         Float3 var2 = new Float3();
@@ -28,8 +28,8 @@ public class DebugRenderer extends Renderer {
         scene.getBackground(background);
 
 
-        int width = frameBuffer.width;
-        int height = frameBuffer.height;
+        int width = image.width;
+        int height = image.height;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 
@@ -52,7 +52,7 @@ public class DebugRenderer extends Renderer {
                 scene.intersect(ray, pointBuffer);
                 Mesh mesh = pointBuffer.mesh;
                 if (mesh == null) {
-                    frameBuffer.set(x, y, background.x, background.y, background.z);
+                    image.set(x, y, background.x, background.y, background.z);
                     continue;
                 }
                 mesh.initPointData(pointBuffer, pointData);
@@ -88,7 +88,7 @@ public class DebugRenderer extends Renderer {
 
                 mesh.getLight(pointData, var1, var2);
 
-                frameBuffer.set(x, y, var2.x + var3.x * cos, var2.y + var3.y * cos, var2.z + var3.z * cos);
+                image.set(x, y, var2.x + var3.x * cos, var2.y + var3.y * cos, var2.z + var3.z * cos);
             }
         }
     }
