@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public class PathTracingRenderer extends Renderer {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
-    public int minCount = 100;
-    public int maxCount = 10000;
-    public float error = 0.05f;
+    public int minCount = 5;
+    public int maxCount = 100;
+    public float error = 0.2f;
     public int maxDepth = 100;
     public float diffuseMax = 1;
 

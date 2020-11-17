@@ -8,6 +8,7 @@ import net.dxzc.pome.renderers.MultiThreadPathTracingRenderer;
 import net.dxzc.pome.renderers.PathTracingRenderer;
 import net.dxzc.pome.scenes.BaseScene;
 import net.dxzc.pome.scenes.BvhScene;
+import net.dxzc.pome.scenes.CountScene;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -48,8 +49,8 @@ public class Main {
 
         builder.pollTransfor();
 
-        int width = 800;
-        int height = 800;
+        int width = 512;
+        int height = 512;
         Image frame = new Image(width, height);
         BaseScene scene = new BvhScene(builder.getAndClear());
         scene.camera.set(278, 273, -800);
@@ -57,6 +58,12 @@ public class Main {
         float w = 0.35f;
         scene.rightward.set(-w, 0, 0);
         scene.upward.set(0, w * width / height, 0);
+
+        CountScene countScene = new CountScene(scene);
+        Scene useScene = scene;
+        if (PathTracingRenderer.DEBUG) {
+            useScene = countScene;
+        }
 
         Renderer renderer;
         if (PathTracingRenderer.DEBUG) {
@@ -67,7 +74,7 @@ public class Main {
         //renderer = new DebugRenderer();
 
         long begin = System.nanoTime();
-        renderer.render(scene, frame);
+        renderer.render(countScene, frame);
         long end = System.nanoTime();
         long d = end - begin;
         long us = d / 1000;
@@ -77,6 +84,11 @@ public class Main {
         long h = min / 60;
         long day = h / 24;
         System.out.println(day + "-" + h % 24 + ":" + min % 60 + ":" + s % 60 + "-" + ms % 1000);
+        if (PathTracingRenderer.DEBUG) {
+            System.out.println(countScene.sampleLightCount.get());
+            System.out.println(countScene.intersectCount.get());
+            System.out.println(countScene.occludedCount.get());
+        }
         ImageIO.write(ImageHelper.toJavaImage(frame), "png", new File("D:\\code\\Pome\\1.png"));
         ImageHelper.writeAsHdr(frame, new FileOutputStream("1.hdr"));
     }
