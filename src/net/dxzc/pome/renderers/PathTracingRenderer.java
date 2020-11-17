@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class PathTracingRenderer extends Renderer {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public int minCount = 5;
     public int maxCount = 100;

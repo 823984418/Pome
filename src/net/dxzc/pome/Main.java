@@ -3,7 +3,6 @@ package net.dxzc.pome;
 
 import net.dxzc.pome.materials.DiffuseMaterial;
 import net.dxzc.pome.materials.MirrorMaterial;
-import net.dxzc.pome.meshs.Sphere;
 import net.dxzc.pome.renderers.MultiThreadPathTracingRenderer;
 import net.dxzc.pome.renderers.PathTracingRenderer;
 import net.dxzc.pome.scenes.BaseScene;
