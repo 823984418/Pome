@@ -2,28 +2,28 @@ package net.dxzc.pome;
 
 public final class Ray {
 
-    public float originX;
+    public double originX;
 
-    public float originY;
+    public double originY;
 
-    public float originZ;
+    public double originZ;
 
-    public float directionX;
+    public double directionX;
 
-    public float directionY;
+    public double directionY;
 
-    public float directionZ;
+    public double directionZ;
 
-    public float minTime;
+    public double minTime;
 
-    public float maxTime;
+    public double maxTime;
 
 
-    public float invDirectionX;
+    public double invDirectionX;
 
-    public float invDirectionY;
+    public double invDirectionY;
 
-    public float invDirectionZ;
+    public double invDirectionZ;
 
     public void init() {
         invDirectionX = 1 / directionX;

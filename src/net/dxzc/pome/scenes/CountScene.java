@@ -20,32 +20,32 @@ public class CountScene extends Scene {
 
 
     @Override
-    public void getCamera(Float3 camera) {
+    public void getCamera(Double3 camera) {
         scene.getCamera(camera);
     }
 
     @Override
-    public void getForward(Float3 forward) {
+    public void getForward(Double3 forward) {
         scene.getForward(forward);
     }
 
     @Override
-    public void getUpward(Float3 upward) {
+    public void getUpward(Double3 upward) {
         scene.getUpward(upward);
     }
 
     @Override
-    public void getRightward(Float3 rightward) {
+    public void getRightward(Double3 rightward) {
         scene.getRightward(rightward);
     }
 
     @Override
-    public void getBackground(Float3 background) {
+    public void getBackground(Double3 background) {
         scene.getBackground(background);
     }
 
     @Override
-    public float sampleLight(BaseRandom random, PointBuffer pointBuffer) {
+    public double sampleLight(BaseRandom random, PointBuffer pointBuffer) {
         sampleLightCount.incrementAndGet();
         return scene.sampleLight(random, pointBuffer);
     }

@@ -1,6 +1,5 @@
 package net.dxzc.pome;
 
-import net.dxzc.pome.meshs.BaseMesh;
 import net.dxzc.pome.meshs.Sphere;
 import net.dxzc.pome.meshs.Triangle;
 
@@ -63,9 +62,9 @@ public class SceneBuilder {
     }
 
     public SceneBuilder triangle(
-            float ax, float ay, float az,
-            float bx, float by, float bz,
-            float cx, float cy, float cz) {
+            double ax, double ay, double az,
+            double bx, double by, double bz,
+            double cx, double cy, double cz) {
         Transfor t = transfors.peek();
         Triangle triangle = new Triangle(materials.peek());
         triangle.aData.x = t.getX(ax, ay, az);
@@ -82,12 +81,12 @@ public class SceneBuilder {
         return this;
     }
 
-    public SceneBuilder triangle(Float3 a, Float3 b, Float3 c) {
+    public SceneBuilder triangle(Double3 a, Double3 b, Double3 c) {
         triangle(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
         return this;
     }
 
-    public SceneBuilder sphere(float cx, float cy, float cz, float r) {
+    public SceneBuilder sphere(double cx, double cy, double cz, double r) {
         Transfor t = transfors.peek();
         Sphere sphere = new Sphere(materials.peek());
         sphere.center.x = t.getX(cx, cy, cz);
@@ -100,7 +99,7 @@ public class SceneBuilder {
     }
 
     public SceneBuilder load(Scanner input) {
-        ArrayList<Float3> positions = new ArrayList<>();
+        ArrayList<Double3> positions = new ArrayList<>();
         positions.add(null);
         while (input.hasNext()) {
             String cmd = input.next();
@@ -109,16 +108,16 @@ public class SceneBuilder {
                     input.nextLine();
                     break;
                 case "v":
-                    Float3 pos = new Float3();
-                    pos.x = input.nextFloat();
-                    pos.y = input.nextFloat();
-                    pos.z = input.nextFloat();
+                    Double3 pos = new Double3();
+                    pos.x = input.nextDouble();
+                    pos.y = input.nextDouble();
+                    pos.z = input.nextDouble();
                     positions.add(pos);
                     break;
                 case "f":
-                    Float3 a = positions.get(input.nextInt());
-                    Float3 b = positions.get(input.nextInt());
-                    Float3 c = positions.get(input.nextInt());
+                    Double3 a = positions.get(input.nextInt());
+                    Double3 b = positions.get(input.nextInt());
+                    Double3 c = positions.get(input.nextInt());
                     triangle(a, b, c);
                     break;
                 default:

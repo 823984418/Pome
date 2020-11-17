@@ -22,24 +22,24 @@ public class BvhScene extends BaseScene {
     private Node rootNode;
 
     @Override
-    public float sampleLight(BaseRandom random, PointBuffer pointBuffer) {
+    public double sampleLight(BaseRandom random, PointBuffer pointBuffer) {
         Node node = rootNode;
         if (node == null) {
             return 0;
         }
-        float all = node.lightLevel;
+        double all = node.lightLevel;
         if (all <= 0) {
             return 0;
         }
-        for (float light = all; ; ) {
+        for (double light = all; ; ) {
             Mesh mesh = node.mesh;
             if (mesh != null) {
                 pointBuffer.mesh = mesh;
                 return light / all * mesh.sampleLight(random, pointBuffer);
             }
-            float t = random.nextFloat() * light;
+            double t = random.nextDouble() * light;
             Node left = node.left;
-            float leftLight = left.lightLevel;
+            double leftLight = left.lightLevel;
             if (t < leftLight) {
                 node = left;
                 light = leftLight;
@@ -56,7 +56,7 @@ public class BvhScene extends BaseScene {
         if (node == null) {
             return;
         }
-        if (!Float.isNaN(node.near(ray))) {
+        if (!Double.isNaN(node.near(ray))) {
             node.intersectNoCheck(ray, pointBuffer);
         }
     }
@@ -67,7 +67,7 @@ public class BvhScene extends BaseScene {
         if (node == null) {
             return false;
         }
-        if (!Float.isNaN(node.near(ray))) {
+        if (!Double.isNaN(node.near(ray))) {
             return node.occludedNoCheck(ray);
         }
         return false;
@@ -77,8 +77,8 @@ public class BvhScene extends BaseScene {
     private static final class Node {
 
         private Node(Mesh[] meshes, int from, int to) {
-            Float3 min = new Float3();
-            Float3 max = new Float3();
+            Double3 min = new Double3();
+            Double3 max = new Double3();
             if (from + 1 == to) {
                 Mesh mesh = meshes[from];
                 mesh.getBounds(min, max);
@@ -91,18 +91,18 @@ public class BvhScene extends BaseScene {
                 lightLevel = mesh.getLightLevel();
                 this.mesh = mesh;
             } else {
-                float centerMinX = Float.POSITIVE_INFINITY;
-                float centerMinY = Float.POSITIVE_INFINITY;
-                float centerMinZ = Float.POSITIVE_INFINITY;
-                float centerMaxX = Float.NEGATIVE_INFINITY;
-                float centerMaxY = Float.NEGATIVE_INFINITY;
-                float centerMaxZ = Float.NEGATIVE_INFINITY;
+                double centerMinX = Double.POSITIVE_INFINITY;
+                double centerMinY = Double.POSITIVE_INFINITY;
+                double centerMinZ = Double.POSITIVE_INFINITY;
+                double centerMaxX = Double.NEGATIVE_INFINITY;
+                double centerMaxY = Double.NEGATIVE_INFINITY;
+                double centerMaxZ = Double.NEGATIVE_INFINITY;
                 for (int i = from; i < to; i++) {
                     Mesh mesh = meshes[i];
                     mesh.getBounds(min, max);
-                    float centerX = (min.x + max.x) / 2;
-                    float centerY = (min.y + max.y) / 2;
-                    float centerZ = (min.z + max.z) / 2;
+                    double centerX = (min.x + max.x) / 2;
+                    double centerY = (min.y + max.y) / 2;
+                    double centerZ = (min.z + max.z) / 2;
                     centerMinX = Math.min(centerMinX, centerX);
                     centerMinY = Math.min(centerMinY, centerY);
                     centerMinZ = Math.min(centerMinZ, centerZ);
@@ -110,9 +110,9 @@ public class BvhScene extends BaseScene {
                     centerMaxY = Math.max(centerMaxY, centerY);
                     centerMaxZ = Math.max(centerMaxZ, centerZ);
                 }
-                float dX = centerMaxX - centerMinX;
-                float dY = centerMaxY - centerMinY;
-                float dZ = centerMaxZ - centerMinZ;
+                double dX = centerMaxX - centerMinX;
+                double dY = centerMaxY - centerMinY;
+                double dZ = centerMaxZ - centerMinZ;
                 int maxD;
                 if (dX > dY) {
                     if (dX > dZ) {
@@ -131,28 +131,28 @@ public class BvhScene extends BaseScene {
                     case 0:
                         Arrays.sort(meshes, from, to, (a, b) -> {
                             a.getBounds(min, max);
-                            float aCenterX = min.x + max.x;
+                            double aCenterX = min.x + max.x;
                             b.getBounds(min, max);
-                            float bCenterX = min.x + max.x;
-                            return Float.compare(aCenterX, bCenterX);
+                            double bCenterX = min.x + max.x;
+                            return Double.compare(aCenterX, bCenterX);
                         });
                         break;
                     case 1:
                         Arrays.sort(meshes, from, to, (a, b) -> {
                             a.getBounds(min, max);
-                            float aCenterY = min.y + max.y;
+                            double aCenterY = min.y + max.y;
                             b.getBounds(min, max);
-                            float bCenterY = min.y + max.y;
-                            return Float.compare(aCenterY, bCenterY);
+                            double bCenterY = min.y + max.y;
+                            return Double.compare(aCenterY, bCenterY);
                         });
                         break;
                     case 2:
                         Arrays.sort(meshes, from, to, (a, b) -> {
                             a.getBounds(min, max);
-                            float aCenterZ = min.z + max.z;
+                            double aCenterZ = min.z + max.z;
                             b.getBounds(min, max);
-                            float bCenterZ = min.z + max.z;
-                            return Float.compare(aCenterZ, bCenterZ);
+                            double bCenterZ = min.z + max.z;
+                            return Double.compare(aCenterZ, bCenterZ);
                         });
                         break;
                 }
@@ -169,28 +169,26 @@ public class BvhScene extends BaseScene {
             }
         }
 
-        float minX;
-        float minY;
-        float minZ;
-        float maxX;
-        float maxY;
-        float maxZ;
+        double minX;
+        double minY;
+        double minZ;
+        double maxX;
+        double maxY;
+        double maxZ;
         Node left;
         Node right;
         Mesh mesh;
-        float lightLevel;
+        double lightLevel;
 
-        private float near(Ray ray) {
-            float i = Float.NEGATIVE_INFINITY;
-            float o = Float.POSITIVE_INFINITY;
-            float invX = ray.invDirectionX;
-            float invY = ray.invDirectionY;
-            float invZ = ray.invDirectionZ;
-            float x = ray.originX;
-            float y = ray.originY;
-            float z = ray.originZ;
-            float inX, inY, inZ;
-            float outX, outY, outZ;
+        private double near(Ray ray) {
+            double invX = ray.invDirectionX;
+            double invY = ray.invDirectionY;
+            double invZ = ray.invDirectionZ;
+            double x = ray.originX;
+            double y = ray.originY;
+            double z = ray.originZ;
+            double inX, inY, inZ;
+            double outX, outY, outZ;
             if (invX > 0) {
                 inX = (minX - x) * invX;
                 outX = (maxX - x) * invX;
@@ -212,12 +210,12 @@ public class BvhScene extends BaseScene {
                 inZ = (maxZ - z) * invZ;
                 outZ = (minZ - z) * invZ;
             }
-            float input = Math.max(inX, Math.max(inY, inZ));
-            float output = Math.min(outX, Math.min(outY, outZ));
+            double input = Math.max(inX, Math.max(inY, inZ));
+            double output = Math.min(outX, Math.min(outY, outZ));
             if (input <= output && input < ray.maxTime && output > ray.minTime) {
                 return input;
             }
-            return Float.NaN;
+            return Double.NaN;
         }
 
         private void intersectNoCheck(Ray ray, PointBuffer pointBuffer) {
@@ -226,24 +224,24 @@ public class BvhScene extends BaseScene {
             } else {
                 Node left = this.left;
                 Node right = this.right;
-                float leftNear = left.near(ray);
-                if (Float.isNaN(leftNear)) {
-                    float rightNear = right.near(ray);
-                    if (Float.isNaN(rightNear)) {
+                double leftNear = left.near(ray);
+                if (Double.isNaN(leftNear)) {
+                    double rightNear = right.near(ray);
+                    if (Double.isNaN(rightNear)) {
 
                     } else {
                         right.intersectNoCheck(ray, pointBuffer);
                     }
                 } else {
-                    float rightNear = right.near(ray);
-                    if (Float.isNaN(rightNear)) {
+                    double rightNear = right.near(ray);
+                    if (Double.isNaN(rightNear)) {
                         left.intersectNoCheck(ray, pointBuffer);
                     } else {
-                        float oldTime = ray.maxTime;
+                        double oldTime = ray.maxTime;
                         if (leftNear < rightNear) {
                             left.intersectNoCheck(ray, pointBuffer);
                             if (oldTime != ray.maxTime) {
-                                if (Float.isNaN(right.near(ray))) {
+                                if (Double.isNaN(right.near(ray))) {
                                     return;
                                 }
                             }
@@ -251,7 +249,7 @@ public class BvhScene extends BaseScene {
                         } else {
                             right.intersectNoCheck(ray, pointBuffer);
                             if (oldTime != ray.maxTime) {
-                                if (Float.isNaN(left.near(ray))) {
+                                if (Double.isNaN(left.near(ray))) {
                                     return;
                                 }
                             }
@@ -268,16 +266,16 @@ public class BvhScene extends BaseScene {
             } else {
                 Node left = this.left;
                 Node right = this.right;
-                float leftNear = left.near(ray);
-                float rightNear = right.near(ray);
-                if (Float.isNaN(leftNear)) {
-                    if (Float.isNaN(rightNear)) {
+                double leftNear = left.near(ray);
+                double rightNear = right.near(ray);
+                if (Double.isNaN(leftNear)) {
+                    if (Double.isNaN(rightNear)) {
                         return false;
                     } else {
                         return right.occludedNoCheck(ray);
                     }
                 } else {
-                    if (Float.isNaN(rightNear)) {
+                    if (Double.isNaN(rightNear)) {
                         return left.occludedNoCheck(ray);
                     } else {
                         if (leftNear < rightNear) {

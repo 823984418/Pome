@@ -2,17 +2,17 @@ package net.dxzc.pome;
 
 public abstract class Scene {
 
-    public abstract void getCamera(Float3 camera);
+    public abstract void getCamera(Double3 camera);
 
-    public abstract void getForward(Float3 forward);
+    public abstract void getForward(Double3 forward);
 
-    public abstract void getUpward(Float3 upward);
+    public abstract void getUpward(Double3 upward);
 
-    public abstract void getRightward(Float3 rightward);
+    public abstract void getRightward(Double3 rightward);
 
-    public abstract void getBackground(Float3 background);
+    public abstract void getBackground(Double3 background);
 
-    public abstract float sampleLight(BaseRandom random, PointBuffer pointBuffer);
+    public abstract double sampleLight(BaseRandom random, PointBuffer pointBuffer);
 
     public abstract void intersect(Ray ray, PointBuffer pointBuffer);
 

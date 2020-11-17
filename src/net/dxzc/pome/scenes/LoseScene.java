@@ -12,8 +12,8 @@ public class LoseScene extends BaseScene {
 
     public LoseScene(Mesh[] meshes, int from, int to) {
         meshes = this.meshes = Arrays.copyOfRange(meshes, from, to);
-        lights = new float[meshes.length];
-        float light = 0;
+        lights = new double[meshes.length];
+        double light = 0;
         for (int i = 0; i < meshes.length; i++) {
             light += meshes[i].getLightLevel();
             lights[i] = light;
@@ -21,18 +21,18 @@ public class LoseScene extends BaseScene {
         allLight = light;
     }
 
-    private final float allLight;
+    private final double allLight;
 
     private final Mesh[] meshes;
 
-    private final float[] lights;
+    private final double[] lights;
 
     @Override
-    public float sampleLight(BaseRandom random, PointBuffer pointBuffer) {
-        float n = random.nextFloat() * allLight;
-        float ls = 0;
+    public double sampleLight(BaseRandom random, PointBuffer pointBuffer) {
+        double n = random.nextDouble() * allLight;
+        double ls = 0;
         for (int i = 0; i < meshes.length; i++) {
-            float l = lights[i];
+            double l = lights[i];
             ls += l;
             if (ls >= l) {
                 pointBuffer.mesh = meshes[i];

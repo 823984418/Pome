@@ -8,13 +8,13 @@ import java.io.IOException;
 
 public class PathTracingRenderer extends Renderer {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public int minCount = 5;
     public int maxCount = 100;
-    public float error = 0.2f;
+    public double error = 0.2;
     public int maxDepth = 100;
-    public float diffuseMax = 1;
+    public double diffuseMax = 1;
 
 
     @Override
@@ -27,9 +27,9 @@ public class PathTracingRenderer extends Renderer {
             debugBuffer1 = new Image(image.width, image.height);
             debugBuffer2 = new Image(image.width, image.height);
         }
-        Float3 var1 = new Float3();
-        Float3 var2 = new Float3();
-        Float3 var3 = new Float3();
+        Double3 var1 = new Double3();
+        Double3 var2 = new Double3();
+        Double3 var3 = new Double3();
 
 
         BaseRandom random = new BaseRandom();
@@ -38,70 +38,70 @@ public class PathTracingRenderer extends Renderer {
         PointData pointData = new PointData();
         PointData lightData = new PointData();
 
-        Float3 camera = new Float3();
+        Double3 camera = new Double3();
         scene.getCamera(camera);
-        Float3 forward = new Float3();
+        Double3 forward = new Double3();
         scene.getForward(forward);
-        Float3 upward = new Float3();
+        Double3 upward = new Double3();
         scene.getUpward(upward);
-        Float3 rightward = new Float3();
+        Double3 rightward = new Double3();
         scene.getRightward(rightward);
-        Float3 background = new Float3();
+        Double3 background = new Double3();
         scene.getBackground(background);
 
         int minCount = this.minCount;
         int maxCount = this.maxCount;
-        float vars = error * error;
+        double vars = error * error;
         int maxDepth = this.maxDepth;
-        float diffuseMax = this.diffuseMax;
+        double diffuseMax = this.diffuseMax;
 
         int width = image.width;
         int height = image.height;
         for (int y = 0; y < height; y++) {
             if (true || DEBUG) {
-                System.out.printf("%2.1f\n", y * 100f / height);
+                System.out.printf("%2.1f\n", y * 100.0 / height);
             }
             for (int x = 0; x < width; x++) {
                 // 计算标准化设备坐标
-                float sdx = 2f * x / width - 1;
-                float sdy = 1 - 2f * y / height;
+                double sdx = 2.0 * x / width - 1;
+                double sdy = 1 - 2.0 * y / height;
 
-                float sumR = 0, sumG = 0, sumB = 0;
-                float sum = 0;
+                double sumR = 0, sumG = 0, sumB = 0;
+                double sum = 0;
                 int count = 0;
-                float square = 0;
+                double square = 0;
 
 
                 int depths = 0;
 
                 while (count < minCount || (square * count - sum * sum) > Math.abs(sum) * (count - 1) * count * vars && count < maxCount) {
-                    float rx = random.nextFloat() * 2 / width;
-                    float ry = random.nextFloat() * 2 / height;
-                    float dx = sdx + rx;
-                    float dy = sdy + ry;
+                    double rx = random.nextDouble() * 2 / width;
+                    double ry = random.nextDouble() * 2 / height;
+                    double dx = sdx + rx;
+                    double dy = sdy + ry;
 
                     // 采样得到的颜色
-                    float r = 0, g = 0, b = 0;
+                    double r = 0, g = 0, b = 0;
 
                     //累计权重
-                    float pR = 1, pG = 1, pB = 1;
+                    double pR = 1, pG = 1, pB = 1;
 
                     // 投射起点
-                    float originX = camera.x;
-                    float originY = camera.y;
-                    float originZ = camera.z;
+                    double originX = camera.x;
+                    double originY = camera.y;
+                    double originZ = camera.z;
 
                     // 投射方向
-                    float directionX = forward.x + dx * rightward.x + dy * upward.x;
-                    float directionY = forward.y + dx * rightward.y + dy * upward.y;
-                    float directionZ = forward.z + dx * rightward.z + dy * upward.z;
+                    double directionX = forward.x + dx * rightward.x + dy * upward.x;
+                    double directionY = forward.y + dx * rightward.y + dy * upward.y;
+                    double directionZ = forward.z + dx * rightward.z + dy * upward.z;
 
                     // 当前深度
                     int depth = 0;
 
-                    float dR = 0;
-                    float dG = 0;
-                    float dB = 0;
+                    double dR = 0;
+                    double dG = 0;
+                    double dB = 0;
 
                     for (; ; ) {
 
@@ -112,8 +112,8 @@ public class PathTracingRenderer extends Renderer {
                         ray.directionX = directionX;
                         ray.directionY = directionY;
                         ray.directionZ = directionZ;
-                        ray.minTime = 0.01f;
-                        ray.maxTime = Float.POSITIVE_INFINITY;
+                        ray.minTime = 0.01;
+                        ray.maxTime = Double.POSITIVE_INFINITY;
                         ray.init();
                         pointBuffer.clear();
                         scene.intersect(ray, pointBuffer);
@@ -147,63 +147,55 @@ public class PathTracingRenderer extends Renderer {
                         }
 
                         // 碰撞坐标
-                        float pointX = pointData.x;
-                        float pointY = pointData.y;
-                        float pointZ = pointData.z;
-
-                        float normalX = pointData.normalX;
-                        float normalY = pointData.normalY;
-                        float normalZ = pointData.normalZ;
-                        float invNormal = 1 / (float) Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
-                        normalX *= invNormal;
-                        normalY *= invNormal;
-                        normalZ *= invNormal;
+                        double pointX = pointData.x;
+                        double pointY = pointData.y;
+                        double pointZ = pointData.z;
 
                         // 采样光源通过对此点的贡献
 
                         // 采样一个光源
-                        float lightPdf = scene.sampleLight(random, pointBuffer);
+                        double lightPdf = scene.sampleLight(random, pointBuffer);
                         Mesh light = pointBuffer.mesh;
                         if (light != null) {
                             light.initPointData(pointBuffer, lightData);
                             // 光源位置
-                            float lightX = lightData.x;
-                            float lightY = lightData.y;
-                            float lightZ = lightData.z;
+                            double lightX = lightData.x;
+                            double lightY = lightData.y;
+                            double lightZ = lightData.z;
 
                             // 计算光源可见性
                             ray.originX = pointX;
                             ray.originY = pointY;
                             ray.originZ = pointZ;
-                            float lightDirX = lightX - pointX;
-                            float lightDirY = lightY - pointY;
-                            float lightDirZ = lightZ - pointZ;
+                            double lightDirX = lightX - pointX;
+                            double lightDirY = lightY - pointY;
+                            double lightDirZ = lightZ - pointZ;
                             ray.directionX = lightDirX;
                             ray.directionY = lightDirY;
                             ray.directionZ = lightDirZ;
-                            ray.minTime = 0.001f;
-                            ray.maxTime = 0.999f;
+                            ray.minTime = 0.001;
+                            ray.maxTime = 0.999;
                             ray.init();
                             if (!scene.occluded(ray)) {
                                 // 计算光源贡献
-                                float lightNormalX = lightData.normalX;
-                                float lightNormalY = lightData.normalY;
-                                float lightNormalZ = lightData.normalZ;
-                                float invLightNormal = 1 / (float) Math.sqrt(lightNormalX * lightNormalX
+                                double lightNormalX = lightData.normalX;
+                                double lightNormalY = lightData.normalY;
+                                double lightNormalZ = lightData.normalZ;
+                                double invLightNormal = 1 /  Math.sqrt(lightNormalX * lightNormalX
                                         + lightNormalY * lightNormalY + lightNormalZ * lightNormalZ);
                                 lightNormalX *= invLightNormal;
                                 lightNormalY *= invLightNormal;
                                 lightNormalZ *= invLightNormal;
-                                float lightDirs = lightDirX * lightDirX + lightDirY * lightDirY + lightDirZ * lightDirZ;
-                                float lightDot = lightDirX * lightNormalX + lightDirY * lightNormalY + lightDirZ * lightNormalZ;
-                                float pow = Math.abs(lightDot) / ((float) Math.sqrt(lightDirs) * lightDirs) / lightPdf;
+                                double lightDirs = lightDirX * lightDirX + lightDirY * lightDirY + lightDirZ * lightDirZ;
+                                double lightDot = lightDirX * lightNormalX + lightDirY * lightNormalY + lightDirZ * lightNormalZ;
+                                double pow = Math.abs(lightDot) / ( Math.sqrt(lightDirs) * lightDirs) / lightPdf;
 
                                 // 计算光源亮度
                                 var1.set(-lightDirX, -lightDirY, -lightDirZ);
                                 light.getLight(lightData, var1, var2);
-                                float lightR = var2.x;
-                                float lightG = var2.y;
-                                float lightB = var2.z;
+                                double lightR = var2.x;
+                                double lightG = var2.y;
+                                double lightB = var2.z;
 
                                 // 计算光源贡献率
                                 var1.set(-lightDirX, -lightDirY, -lightDirZ);
@@ -218,16 +210,16 @@ public class PathTracingRenderer extends Renderer {
                         }
 
                         var1.set(-directionX, -directionY, -directionZ);
-                        float nextPdf = mesh.sampleDiffuseInput(random, pointData, var1, var2);
+                        double nextPdf = mesh.sampleDiffuseInput(random, pointData, var1, var2);
                         if (nextPdf <= 0) {
                             break;
                         }
-                        float nextDirectionX = var2.x;
-                        float nextDirectionY = var2.y;
-                        float nextDirectionZ = var2.z;
-                        float nextDirection = (float) Math.sqrt(nextDirectionX * nextDirectionX + nextDirectionY * nextDirectionY
+                        double nextDirectionX = var2.x;
+                        double nextDirectionY = var2.y;
+                        double nextDirectionZ = var2.z;
+                        double nextDirection =  Math.sqrt(nextDirectionX * nextDirectionX + nextDirectionY * nextDirectionY
                                 + nextDirectionZ * nextDirectionZ);
-                        if (nextDirection < 0.01f) {
+                        if (nextDirection < 0.01) {
                             break;
                         }
                         var1.x = nextDirectionX;
@@ -237,7 +229,7 @@ public class PathTracingRenderer extends Renderer {
                         var2.y = -directionY;
                         var2.z = -directionZ;
                         mesh.getDiffuse(pointData, var1, var2, var3);
-                        float pow = 1 / nextPdf;
+                        double pow = 1 / nextPdf;
                         dR = var3.x;
                         dG = var3.y;
                         dB = var3.z;
@@ -251,10 +243,10 @@ public class PathTracingRenderer extends Renderer {
                         }
 
                         // 计算轮盘赌概率
-                        float pC = Math.min((float) Math.pow((pR + pG + pB) / 3, 0.1), 1);
+                        double pC = Math.min( Math.pow((pR + pG + pB) / 3, 0.1), 1);
 
                         // 测试轮盘赌和最大深度
-                        if (random.nextFloat() >= pC || depth >= maxDepth) {
+                        if (random.nextDouble() >= pC || depth >= maxDepth) {
                             r += pR * background.x;
                             g += pG * background.z;
                             b += pB * background.z;
@@ -286,7 +278,7 @@ public class PathTracingRenderer extends Renderer {
                     sumR += r;
                     sumG += g;
                     sumB += b;
-                    float p = r + g + b;
+                    double p = r + g + b;
                     sum += p;
                     count++;
                     square += p * p;
@@ -294,9 +286,9 @@ public class PathTracingRenderer extends Renderer {
                 }
                 image.set(x, y, sumR / count, sumG / count, sumB / count);
                 if (DEBUG) {
-                    float debug0 = 0.001f * count;
-                    float debug1 = 0.1f * (float) depths / count;
-                    float debug2 = (float) Math.sqrt((square * count - sum * sum) / ((count - 1) * count * Math.abs(sum)));
+                    double debug0 = 0.001 * count;
+                    double debug1 = 0.1 *  depths / count;
+                    double debug2 =  Math.sqrt((square * count - sum * sum) / ((count - 1) * count * Math.abs(sum)));
                     debugBuffer0.set(x, y, debug0, debug0, debug0);
                     debugBuffer1.set(x, y, debug1, debug1, debug1);
                     debugBuffer2.set(x, y, debug2, debug2, debug2);

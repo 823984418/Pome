@@ -8,69 +8,69 @@ public class Sphere extends BaseMesh {
         super(material);
     }
 
-    public float radius;
+    public double radius;
 
     public final PointData center = new PointData();
 
-    private float centerX;
+    private double centerX;
 
-    private float centerY;
+    private double centerY;
 
-    private float centerZ;
+    private double centerZ;
 
-    private float area;
+    private double area;
 
-    private float lightLevel;
+    private double lightLevel;
 
     public void init() {
         centerX = center.x;
         centerY = center.y;
         centerZ = center.z;
-        area = 4f / 3 * (float) Math.PI * radius * radius * radius;
+        area = 4f / 3 *  Math.PI * radius * radius * radius;
         lightLevel = material.getLightLevel(center) * area;
     }
 
     @Override
-    public float getLightLevel() {
+    public double getLightLevel() {
         return lightLevel;
     }
 
     @Override
-    public void getBounds(Float3 min, Float3 max) {
+    public void getBounds(Double3 min, Double3 max) {
         min.set(centerX - radius, centerY - radius, centerZ - radius);
         max.set(centerX + radius, centerY + radius, centerZ + radius);
     }
 
     @Override
-    public float sampleLight(BaseRandom random, PointBuffer pointBuffer) {
+    public double sampleLight(BaseRandom random, PointBuffer pointBuffer) {
         random.nextTarget();
-        pointBuffer.buffer1 = random.float3.x * radius;
-        pointBuffer.buffer2 = random.float3.y * radius;
-        pointBuffer.buffer3 = random.float3.z * radius;
+        pointBuffer.buffer1 = random.double3.x * radius;
+        pointBuffer.buffer2 = random.double3.y * radius;
+        pointBuffer.buffer3 = random.double3.z * radius;
         return 1 / area;
     }
 
     @Override
     public void intersect(Ray ray, PointBuffer pointBuffer) {
-        float originX = ray.originX;
-        float originY = ray.originY;
-        float originZ = ray.originZ;
-        float directionX = ray.directionX;
-        float directionY = ray.directionY;
-        float directionZ = ray.directionZ;
-        float longX = originX - centerX;
-        float longY = originY - centerY;
-        float longZ = originZ - centerZ;
-        float r = radius;
-        float a = directionX * directionX + directionY * directionY + directionZ * directionZ;
-        float b = 2 * (directionX * longX + directionY * longY + directionZ * longZ);
-        float c = longX * longX + longY * longY + longZ * longZ - r * r;
-        float delta = b * b - 4 * a * c;
+        double originX = ray.originX;
+        double originY = ray.originY;
+        double originZ = ray.originZ;
+        double directionX = ray.directionX;
+        double directionY = ray.directionY;
+        double directionZ = ray.directionZ;
+        double longX = originX - centerX;
+        double longY = originY - centerY;
+        double longZ = originZ - centerZ;
+        double r = radius;
+        double a = directionX * directionX + directionY * directionY + directionZ * directionZ;
+        double b = 2 * (directionX * longX + directionY * longY + directionZ * longZ);
+        double c = longX * longX + longY * longY + longZ * longZ - r * r;
+        double delta = b * b - 4 * a * c;
         if (delta < 0) {
             return;
         }
-        delta = (float) Math.sqrt(delta);
-        float t = (-b - delta) / (2 * a);
+        delta =  Math.sqrt(delta);
+        double t = (-b - delta) / (2 * a);
         if (t > ray.minTime && t < ray.maxTime) {
             ray.maxTime = t;
             pointBuffer.mesh = this;
@@ -91,46 +91,46 @@ public class Sphere extends BaseMesh {
 
     @Override
     public boolean occluded(Ray ray) {
-        float originX = ray.originX;
-        float originY = ray.originY;
-        float originZ = ray.originZ;
-        float directionX = ray.directionX;
-        float directionY = ray.directionY;
-        float directionZ = ray.directionZ;
-        float longX = originX - centerX;
-        float longY = originY - centerY;
-        float longZ = originZ - centerZ;
-        float r = radius;
-        float a = directionX * directionX + directionY * directionY + directionZ * directionZ;
-        float b = 2 * (directionX * longX + directionY * longY + directionZ * longZ);
-        float c = longX * longX + longY * longY + longZ * longZ - r * r;
-        float delta = b * b - 4 * a * c;
+        double originX = ray.originX;
+        double originY = ray.originY;
+        double originZ = ray.originZ;
+        double directionX = ray.directionX;
+        double directionY = ray.directionY;
+        double directionZ = ray.directionZ;
+        double longX = originX - centerX;
+        double longY = originY - centerY;
+        double longZ = originZ - centerZ;
+        double r = radius;
+        double a = directionX * directionX + directionY * directionY + directionZ * directionZ;
+        double b = 2 * (directionX * longX + directionY * longY + directionZ * longZ);
+        double c = longX * longX + longY * longY + longZ * longZ - r * r;
+        double delta = b * b - 4 * a * c;
         if (delta < 0) {
             return false;
         }
-        delta = (float) Math.sqrt(delta);
-        float t1 = (-b - delta) / (2 * a);
+        delta =  Math.sqrt(delta);
+        double t1 = (-b - delta) / (2 * a);
         if (t1 > ray.minTime && t1 < ray.maxTime) {
             return true;
         }
-        float t2 = (-b + delta) / (2 * a);
+        double t2 = (-b + delta) / (2 * a);
         return t2 > ray.minTime && t2 < ray.maxTime;
     }
 
     @Override
     public void initPointData(PointBuffer pointBuffer, PointData pointData) {
         pointData.set(center);
-        float normalX = pointBuffer.buffer1;
-        float normalY = pointBuffer.buffer2;
-        float normalZ = pointBuffer.buffer3;
+        double normalX = pointBuffer.buffer1;
+        double normalY = pointBuffer.buffer2;
+        double normalZ = pointBuffer.buffer3;
         pointData.x = centerX + normalX;
         pointData.y = centerY + normalY;
         pointData.z = centerZ + normalZ;
-        float invNormal = 1 / (float) Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+        double invNormal = 1 /  Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
         pointData.normalX = normalX * invNormal;
         pointData.normalY = normalY * invNormal;
         pointData.normalZ = normalZ * invNormal;
-        if (Math.abs(normalX) > 0.999f) {
+        if (Math.abs(normalX) > 0.999) {
             pointData.tangentX = -normalY;
             pointData.tangentY = -normalX;
             pointData.tangentZ = 0;

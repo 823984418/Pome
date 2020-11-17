@@ -2,24 +2,24 @@ package net.dxzc.pome;
 
 public final class Transfor {
 
-    private static final float EPSILON = 0.000001f;
+    private static final double EPSILON = 0.000001;
 
     public static Transfor lookAt(
-            float eyeX, float eyeY, float eyeZ,
-            float centerX, float centerY, float centerZ,
-            float upX, float upY, float upZ) {
+            double eyeX, double eyeY, double eyeZ,
+            double centerX, double centerY, double centerZ,
+            double upX, double upY, double upZ) {
 
-        float z0 = eyeX - centerX;
-        float z1 = eyeY - centerY;
-        float z2 = eyeZ - centerZ;
-        float len = 1 / (float) Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
+        double z0 = eyeX - centerX;
+        double z1 = eyeY - centerY;
+        double z2 = eyeZ - centerZ;
+        double len = 1 /  Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
         z0 *= len;
         z1 *= len;
         z2 *= len;
-        float x0 = upY * z2 - upZ * z1;
-        float x1 = upZ * z0 - upX * z2;
-        float x2 = upX * z1 - upY * z0;
-        len = (float) Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
+        double x0 = upY * z2 - upZ * z1;
+        double x1 = upZ * z0 - upX * z2;
+        double x2 = upX * z1 - upY * z0;
+        len =  Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
 
         if (len == 0) {
             x0 = 0;
@@ -32,10 +32,10 @@ public final class Transfor {
             x2 *= len;
         }
 
-        float y0 = z1 * x2 - z2 * x1;
-        float y1 = z2 * x0 - z0 * x2;
-        float y2 = z0 * x1 - z1 * x0;
-        len = (float) Math.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
+        double y0 = z1 * x2 - z2 * x1;
+        double y1 = z2 * x0 - z0 * x2;
+        double y2 = z0 * x1 - z1 * x0;
+        len =  Math.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
 
         if (len == 0) {
             y0 = 0;
@@ -55,7 +55,7 @@ public final class Transfor {
         );
     }
 
-    public static Transfor translate(float dX, float dY, float dZ) {
+    public static Transfor translate(double dX, double dY, double dZ) {
         return new Transfor(
                 1, 0, 0, dX,
                 0, 1, 0, dY,
@@ -63,7 +63,7 @@ public final class Transfor {
         );
     }
 
-    public static Transfor scale(float dX, float dY, float dZ) {
+    public static Transfor scale(double dX, double dY, double dZ) {
         return new Transfor(
                 dX, 0, 0, 0,
                 0, dY, 0, 0,
@@ -78,9 +78,9 @@ public final class Transfor {
     );
 
     public Transfor(
-            float xx, float xy, float xz, float xa,
-            float yx, float yy, float yz, float ya,
-            float zx, float zy, float zz, float za) {
+            double xx, double xy, double xz, double xa,
+            double yx, double yy, double yz, double ya,
+            double zx, double zy, double zz, double za) {
         this.xx = xx;
         this.xy = xy;
         this.xz = xz;
@@ -95,9 +95,9 @@ public final class Transfor {
         this.za = za;
     }
 
-    private final float xx, xy, xz, xa;
-    private final float yx, yy, yz, ya;
-    private final float zx, zy, zz, za;
+    private final double xx, xy, xz, xa;
+    private final double yx, yy, yz, ya;
+    private final double zx, zy, zz, za;
 
     public Transfor append(Transfor a) {
         return new Transfor(
@@ -118,32 +118,32 @@ public final class Transfor {
         );
     }
 
-    public float getX(Float3 o) {
+    public double getX(Double3 o) {
         return xx * o.x + xy * o.y + xz * o.z + xa;
     }
 
-    public float getY(Float3 o) {
+    public double getY(Double3 o) {
         return yx * o.x + yy * o.y + yz * o.z + ya;
     }
 
-    public float getZ(Float3 o) {
+    public double getZ(Double3 o) {
         return zx * o.x + zy * o.y + zz * o.z + za;
     }
 
-    public float getX(float ox, float oy, float oz) {
+    public double getX(double ox, double oy, double oz) {
         return xx * ox + xy * oy + xz * oz + xa;
     }
 
-    public float getY(float ox, float oy, float oz) {
+    public double getY(double ox, double oy, double oz) {
         return yx * ox + yy * oy + yz * oz + ya;
     }
 
-    public float getZ(float ox, float oy, float oz) {
+    public double getZ(double ox, double oy, double oz) {
         return zx * ox + zy * oy + zz * oz + za;
     }
 
-    public void get(Float3 o, Float3 v) {
-        float ox = o.x, oy = o.y, oz = o.z;
+    public void get(Double3 o, Double3 v) {
+        double ox = o.x, oy = o.y, oz = o.z;
         v.set(
                 xx * ox + xy * oy + xz * oz + xa,
                 yx * ox + yy * oy + yz * oz + ya,
@@ -151,7 +151,7 @@ public final class Transfor {
         );
     }
 
-    public void get(float ox, float oy, float oz, Float3 v) {
+    public void get(double ox, double oy, double oz, Double3 v) {
         v.set(
                 xx * ox + xy * oy + xz * oz + xa,
                 yx * ox + yy * oy + yz * oz + ya,

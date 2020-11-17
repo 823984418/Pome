@@ -19,13 +19,13 @@ public class Main {
     public static void main(String[] args) throws Exception {
         SceneBuilder builder = new SceneBuilder();
         DiffuseMaterial light = new DiffuseMaterial();
-        light.light.set(47.8348f, 38.5664f, 31.0808f);
+        light.light.set(47.8348, 38.5664, 31.0808);
         DiffuseMaterial base = new DiffuseMaterial();
-        base.color.set(0.725f, 0.71f, 0.68f);
+        base.color.set(0.725, 0.71, 0.68);
         DiffuseMaterial red = new DiffuseMaterial();
-        red.color.set(0.63f, 0.065f, 0.05f);
+        red.color.set(0.63, 0.065, 0.05);
         DiffuseMaterial blue = new DiffuseMaterial();
-        blue.color.set(0.14f, 0.45f, 0.091f);
+        blue.color.set(0.14, 0.45, 0.091);
         MirrorMaterial mirror = new MirrorMaterial();
         mirror.color.set(1, 1, 1);
         builder.material(light).loadFile("cornellbox\\light.obj").pollMaterial();
@@ -55,7 +55,7 @@ public class Main {
         BaseScene scene = new BvhScene(builder.getAndClear());
         scene.camera.set(278, 273, -800);
         scene.forward.set(0, 0, 1);
-        float w = 0.35f;
+        double w = 0.35;
         scene.rightward.set(-w, 0, 0);
         scene.upward.set(0, w * width / height, 0);
 
@@ -74,7 +74,7 @@ public class Main {
         //renderer = new DebugRenderer();
 
         long begin = System.nanoTime();
-        renderer.render(countScene, frame);
+        renderer.render(useScene, frame);
         long end = System.nanoTime();
         long d = end - begin;
         long us = d / 1000;

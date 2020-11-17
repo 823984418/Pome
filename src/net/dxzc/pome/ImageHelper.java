@@ -10,7 +10,7 @@ public class ImageHelper {
     public static BufferedImage toJavaImage(Image image) {
         int width = image.width;
         int height = image.height;
-        float[] buffer = image.buffer;
+        double[] buffer = image.buffer;
         BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         int[] buff = new int[width * height];
         for (int i = 0; i < buff.length; i++) {
@@ -47,13 +47,13 @@ public class ImageHelper {
                 0, 0, 0, 0,
         };
         outputStream.write(head);
-        float[] buffer = image.buffer;
+        double[] buffer = image.buffer;
         for (int y = height - 1; y >= 0; y--) {
             for (int x = 0; x < width; x++) {
                 int i = (x + y * width) * 3;
-                float r = buffer[i];
-                float g = buffer[i + 1];
-                float b = buffer[i + 2];
+                double r = buffer[i];
+                double g = buffer[i + 1];
+                double b = buffer[i + 2];
                 int gr = Math.max(0, Math.min((int) (Math.pow(r, 0.6) * 256), 255));
                 int gg = Math.max(0, Math.min((int) (Math.pow(g, 0.6) * 256), 255));
                 int gb = Math.max(0, Math.min((int) (Math.pow(b, 0.6) * 256), 255));
@@ -69,14 +69,14 @@ public class ImageHelper {
         int height = image.height;
         outputStream.write(("FORMAT=32-bit_rle_rgbe\n\n" +
                 "-Y " + height + " -X " + width + "\n").getBytes(StandardCharsets.US_ASCII));
-        float[] buffer = image.buffer;
+        double[] buffer = image.buffer;
         int size = width * height * 3;
         for (int i = 0; i < size; ) {
-            float r = buffer[i++];
-            float g = buffer[i++];
-            float b = buffer[i++];
-            float v = Math.max(r, Math.max(g, b));
-            if (v >= 1e-32f) {
+            double r = buffer[i++];
+            double g = buffer[i++];
+            double b = buffer[i++];
+            double v = Math.max(r, Math.max(g, b));
+            if (v >= 1e-32) {
                 int e = Math.getExponent(v) + 1;
                 double m = 256 / Math.pow(2, e);
                 outputStream.write((int) (r * m));
