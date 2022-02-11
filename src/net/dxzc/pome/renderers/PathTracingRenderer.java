@@ -67,16 +67,26 @@ public class PathTracingRenderer extends Renderer {
                 double sdy = 1 - 2.0 * y / height;
 
                 double sumR = 0, sumG = 0, sumB = 0;
+
+                // 样本亮度的和
                 double sum = 0;
+
+                // 采样次数
                 int count = 0;
+
+                // 样本亮度的平方和
                 double square = 0;
 
 
                 int depths = 0;
 
-                while (count < minCount || (square * count - sum * sum) > Math.abs(sum) * (count - 1) * count * vars && count < maxCount) {
-                    double rx = random.nextDouble() * 2 / width;
-                    double ry = random.nextDouble() * 2 / height;
+                // 样本方差的期望 = (square - sum*sum/count)/(count-1)
+                // 平均值的方差期望 = 样本方差的期望 / count
+                // 要求平均值的方差 <= vars
+                // 因此当 square * count - sum * sum > vars * count * count * (n - 1) 需要继续采样
+                while (count < minCount || (square * count - sum * sum) > vars * count * count * (count - 1) && count < maxCount) {
+                    double rx = (random.nextDouble() * 2 - 1) / width;
+                    double ry = (random.nextDouble() * 2 - 1) / height;
                     double dx = sdx + rx;
                     double dy = sdy + ry;
 
@@ -178,17 +188,23 @@ public class PathTracingRenderer extends Renderer {
                             ray.init();
                             if (!scene.occluded(ray)) {
                                 // 计算光源贡献
+
+                                // 得到归一化的光源法线
                                 double lightNormalX = lightData.normalX;
                                 double lightNormalY = lightData.normalY;
                                 double lightNormalZ = lightData.normalZ;
-                                double invLightNormal = 1 /  Math.sqrt(lightNormalX * lightNormalX
+                                double invLightNormal = 1 / Math.sqrt(lightNormalX * lightNormalX
                                         + lightNormalY * lightNormalY + lightNormalZ * lightNormalZ);
                                 lightNormalX *= invLightNormal;
                                 lightNormalY *= invLightNormal;
                                 lightNormalZ *= invLightNormal;
+
+                                // 距离平方
                                 double lightDirs = lightDirX * lightDirX + lightDirY * lightDirY + lightDirZ * lightDirZ;
+                                // 距离 * cos光源
                                 double lightDot = lightDirX * lightNormalX + lightDirY * lightNormalY + lightDirZ * lightNormalZ;
-                                double pow = Math.abs(lightDot) / ( Math.sqrt(lightDirs) * lightDirs) / lightPdf;
+                                // cos光源 / 光源采样概率 / 距离平方
+                                double pow = Math.abs(lightDot) / (Math.sqrt(lightDirs) * lightDirs) / lightPdf;
 
                                 // 计算光源亮度
                                 var1.set(-lightDirX, -lightDirY, -lightDirZ);
@@ -217,7 +233,7 @@ public class PathTracingRenderer extends Renderer {
                         double nextDirectionX = var2.x;
                         double nextDirectionY = var2.y;
                         double nextDirectionZ = var2.z;
-                        double nextDirection =  Math.sqrt(nextDirectionX * nextDirectionX + nextDirectionY * nextDirectionY
+                        double nextDirection = Math.sqrt(nextDirectionX * nextDirectionX + nextDirectionY * nextDirectionY
                                 + nextDirectionZ * nextDirectionZ);
                         if (nextDirection < 0.01) {
                             break;
@@ -243,7 +259,7 @@ public class PathTracingRenderer extends Renderer {
                         }
 
                         // 计算轮盘赌概率
-                        double pC = Math.min( Math.pow((pR + pG + pB) / 3, 0.1), 1);
+                        double pC = Math.min(Math.pow((pR + pG + pB) / 3, 0.1), 1);
 
                         // 测试轮盘赌和最大深度
                         if (random.nextDouble() >= pC || depth >= maxDepth) {
@@ -287,8 +303,8 @@ public class PathTracingRenderer extends Renderer {
                 image.set(x, y, sumR / count, sumG / count, sumB / count);
                 if (DEBUG) {
                     double debug0 = 0.001 * count;
-                    double debug1 = 0.1 *  depths / count;
-                    double debug2 =  Math.sqrt((square * count - sum * sum) / ((count - 1) * count * Math.abs(sum)));
+                    double debug1 = 0.1 * depths / count;
+                    double debug2 = Math.sqrt((square - sum * sum / count) / (count - 1) / count);
                     debugBuffer0.set(x, y, debug0, debug0, debug0);
                     debugBuffer1.set(x, y, debug1, debug1, debug1);
                     debugBuffer2.set(x, y, debug2, debug2, debug2);
