@@ -354,77 +354,77 @@ public class BaseRandom {
         return (((long) (next(26)) << 27) + next(27)) * 0x1.0p-53;
     }
 
-    public final Float3 float3 = new Float3();
+    public final Double3 double3 = new Double3();
 
     public void nextWUV() {
-        float t = (float) Math.sqrt(nextFloat());
-        float u = 1 - t;
-        float v = t * nextFloat();
-        float3.x = t - v;
-        float3.y = u;
-        float3.z = v;
+        double t =  Math.sqrt(nextDouble());
+        double u = 1 - t;
+        double v = t * nextDouble();
+        double3.x = t - v;
+        double3.y = u;
+        double3.z = v;
     }
 
-    public void nextWUV(float a, float b, float c) {
-        float s = a + b + c;
-        float r = s * nextFloat();
-        float t = (float) Math.pow(nextFloat(), 1f / 3);
-        float u = 1 - t;
-        float v = t * (1 - (float) Math.sqrt(nextFloat()));
+    public void nextWUV(double a, double b, double c) {
+        double s = a + b + c;
+        double r = s * nextDouble();
+        double t =  Math.pow(nextDouble(), 1.0 / 3);
+        double u = 1 - t;
+        double v = t * (1 -  Math.sqrt(nextDouble()));
         if (r < a) {
-            float3.x = 1 - u - v;
-            float3.y = u;
-            float3.z = v;
+            double3.x = 1 - u - v;
+            double3.y = u;
+            double3.z = v;
         } else if (r < a + b) {
-            float3.x = v;
-            float3.y = 1 - u - v;
-            float3.z = u;
+            double3.x = v;
+            double3.y = 1 - u - v;
+            double3.z = u;
         } else {
-            float3.x = u;
-            float3.y = v;
-            float3.z = 1 - u - v;
+            double3.x = u;
+            double3.y = v;
+            double3.z = 1 - u - v;
         }
     }
 
     public void nextTarget() {
-        float r = nextFloat() * 2 * (float) Math.PI;
-        float z = nextFloat() * 2 - 1;
-        float x = (float) Math.sin(r);
-        float y = (float) Math.cos(r);
-        float h = (float) Math.sqrt(1 - z * z);
-        float3.x = x * h;
-        float3.y = y * h;
-        float3.z = z;
+        double r = nextDouble() * 2 *  Math.PI;
+        double z = nextDouble() * 2 - 1;
+        double x =  Math.sin(r);
+        double y =  Math.cos(r);
+        double h =  Math.sqrt(1 - z * z);
+        double3.x = x * h;
+        double3.y = y * h;
+        double3.z = z;
     }
 
-    public float nextCosineTarget() {
-        float pdf = nextCosineHalfTarget();
+    public double nextCosineTarget() {
+        double pdf = nextCosineHalfTarget();
         if (nextBoolean()) {
-            float3.z = -float3.z;
+            double3.z = -double3.z;
         }
         return pdf / 2;
     }
 
-    public float nextCosineHalfTarget() {
-        float t = nextFloat() * 2 * (float) Math.PI;
-        float r2 = nextFloat();
-        float r = (float) Math.sqrt(r2);
-        float3.x = r * (float) Math.sin(t);
-        float3.y = r * (float) Math.cos(t);
-        float3.z = (float) Math.sqrt(1 - r2);
-        return float3.z / (float) Math.PI;
+    public double nextCosineHalfTarget() {
+        double t = nextDouble() * 2 *  Math.PI;
+        double r2 = nextDouble();
+        double r =  Math.sqrt(r2);
+        double3.x = r *  Math.sin(t);
+        double3.y = r *  Math.cos(t);
+        double3.z =  Math.sqrt(1 - r2);
+        return double3.z /  Math.PI;
     }
 
-    public float nextCosineHalfTarget(float normalX, float normalY, float normalZ) {
-        float normal = (float) Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+    public double nextCosineHalfTarget(double normalX, double normalY, double normalZ) {
+        double normal =  Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
         normalX /= normal;
         normalY /= normal;
         normalZ /= normal;
         nextTarget();
-        float x = float3.x;
-        float y = float3.y;
-        float z = float3.z;
-        float r = x * normalX + y * normalY + z * normalZ;
+        double x = double3.x;
+        double y = double3.y;
+        double z = double3.z;
+        double r = x * normalX + y * normalY + z * normalZ;
 
 
         if (false) {
@@ -433,10 +433,10 @@ public class BaseRandom {
                 y = -y;
                 z = -z;
             }
-            float3.x = x;
-            float3.y = y;
-            float3.z = z;
-            return 0.5f / (float) Math.PI;
+            double3.x = x;
+            double3.y = y;
+            double3.z = z;
+            return 0.5 /  Math.PI;
         }
 
 
@@ -444,18 +444,18 @@ public class BaseRandom {
         x -= r * normalX;
         y -= r * normalY;
         z -= r * normalZ;
-        float pR = (float) Math.sqrt(r / (1 - r * r));
+        double pR =  Math.sqrt(r / (1 - r * r));
         x *= pR;
         y *= pR;
         z *= pR;
-        r = (float) Math.sqrt(1 - r);
+        r =  Math.sqrt(1 - r);
         x += r * normalX;
         y += r * normalY;
         z += r * normalZ;
-        float3.x = x;
-        float3.y = y;
-        float3.z = z;
-        return r / (float) Math.PI;
+        double3.x = x;
+        double3.y = y;
+        double3.z = z;
+        return r /  Math.PI;
     }
 
 

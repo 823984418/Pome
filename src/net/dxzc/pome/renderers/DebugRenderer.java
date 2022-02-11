@@ -7,24 +7,23 @@ public class DebugRenderer extends Renderer {
     @Override
     public void render(Scene scene, Image image) {
 
-        Float3 var1 = new Float3();
-        Float3 var2 = new Float3();
-        Float3 var3 = new Float3();
+        Double3 var1 = new Double3();
+        Double3 var2 = new Double3();
+        Double3 var3 = new Double3();
 
-        BaseRandom random = new BaseRandom();
         Ray ray = new Ray();
         PointBuffer pointBuffer = new PointBuffer();
         PointData pointData = new PointData();
 
-        Float3 camera = new Float3();
+        Double3 camera = new Double3();
         scene.getCamera(camera);
-        Float3 forward = new Float3();
+        Double3 forward = new Double3();
         scene.getForward(forward);
-        Float3 upward = new Float3();
+        Double3 upward = new Double3();
         scene.getUpward(upward);
-        Float3 rightward = new Float3();
+        Double3 rightward = new Double3();
         scene.getRightward(rightward);
-        Float3 background = new Float3();
+        Double3 background = new Double3();
         scene.getBackground(background);
 
 
@@ -34,19 +33,19 @@ public class DebugRenderer extends Renderer {
             for (int x = 0; x < width; x++) {
 
                 // 计算标准化设备坐标
-                float dx = 2f * x / width - 1;
-                float dy = 1 - 2f * y / height;
+                double dx = 2.0 * x / width - 1;
+                double dy = 1 - 2.0 * y / height;
 
                 // 投射起点
                 ray.originX = camera.x;
                 ray.originY = camera.y;
                 ray.originZ = camera.z;
                 // 投射方向
-                float directionX = ray.directionX = forward.x + dx * rightward.x + dy * upward.x;
-                float directionY = ray.directionY = forward.y + dx * rightward.y + dy * upward.y;
-                float directionZ = ray.directionZ = forward.z + dx * rightward.z + dy * upward.z;
+                double directionX = ray.directionX = forward.x + dx * rightward.x + dy * upward.x;
+                double directionY = ray.directionY = forward.y + dx * rightward.y + dy * upward.y;
+                double directionZ = ray.directionZ = forward.z + dx * rightward.z + dy * upward.z;
                 ray.minTime = 0.01f;
-                ray.maxTime = Float.POSITIVE_INFINITY;
+                ray.maxTime = Double.POSITIVE_INFINITY;
                 ray.init();
                 pointBuffer.clear();
                 scene.intersect(ray, pointBuffer);
@@ -57,16 +56,16 @@ public class DebugRenderer extends Renderer {
                 }
                 mesh.initPointData(pointBuffer, pointData);
 
-                float invDirection = 1 / (float) Math.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
+                double invDirection = 1 / Math.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
 
-                float normalX = pointData.normalX;
-                float normalY = pointData.normalY;
-                float normalZ = pointData.normalZ;
-                float invNormal = 1 / (float) Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+                double normalX = pointData.normalX;
+                double normalY = pointData.normalY;
+                double normalZ = pointData.normalZ;
+                double invNormal = 1 / Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
                 normalX *= invNormal;
                 normalY *= invNormal;
                 normalZ *= invNormal;
-                float cos = (directionX * normalX + directionY * normalY + directionZ * normalZ) * invDirection;
+                double cos = (directionX * normalX + directionY * normalY + directionZ * normalZ) * invDirection;
                 if (cos < 0) {
                     normalX = -normalX;
                     normalY = -normalY;

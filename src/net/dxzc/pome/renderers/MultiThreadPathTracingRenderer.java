@@ -21,7 +21,7 @@ public class MultiThreadPathTracingRenderer extends Renderer {
         int width = image.width;
         int height = image.height;
         for (int i = 0; i < count; i++) {
-            FutureTask<Image> task = new FutureTask<Image>(() -> {
+            FutureTask<Image> task = new FutureTask<>(() -> {
                 Image buffer = new Image(width, height);
                 PathTracingRenderer renderer = new PathTracingRenderer();
                 renderer.render(scene, buffer);
@@ -30,12 +30,12 @@ public class MultiThreadPathTracingRenderer extends Renderer {
             new Thread(task).start();
             list.add(task);
         }
-        float invCount = 1f / count;
-        float[] bufferArray = image.buffer;
+        double invCount = 1.0 / count;
+        double[] bufferArray = image.buffer;
         for (Future<Image> i : list) {
             try {
                 Image load = i.get();
-                float[] loadArray = load.buffer;
+                double[] loadArray = load.buffer;
                 for (int t = 0; t < width * height * 3; t++) {
                     bufferArray[t] += loadArray[t] * invCount;
                 }

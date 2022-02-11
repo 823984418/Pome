@@ -1,6 +1,6 @@
 package net.dxzc.pome.scenes;
 
-import net.dxzc.pome.Float3;
+import net.dxzc.pome.Double3;
 import net.dxzc.pome.Scene;
 
 public abstract class BaseScene extends Scene {
@@ -12,44 +12,44 @@ public abstract class BaseScene extends Scene {
         rightward.set(1, 0, 0);
     }
 
-    public float backgroundR;
+    public double backgroundR;
 
-    public float backgroundG;
+    public double backgroundG;
 
-    public float backgroundB;
+    public double backgroundB;
 
-    public final Float3 camera = new Float3();
+    public final Double3 camera = new Double3();
 
-    public final Float3 forward = new Float3();
+    public final Double3 forward = new Double3();
 
-    public final Float3 upward = new Float3();
+    public final Double3 upward = new Double3();
 
-    public final Float3 rightward = new Float3();
+    public final Double3 rightward = new Double3();
 
     @Override
-    public void getBackground(Float3 background) {
+    public void getBackground(Double3 background) {
         background.x = backgroundR;
         background.y = backgroundG;
         background.z = backgroundB;
     }
 
     @Override
-    public void getCamera(Float3 camera) {
+    public void getCamera(Double3 camera) {
         camera.set(this.camera);
     }
 
     @Override
-    public void getForward(Float3 forward) {
+    public void getForward(Double3 forward) {
         forward.set(this.forward);
     }
 
     @Override
-    public void getUpward(Float3 upward) {
+    public void getUpward(Double3 upward) {
         upward.set(this.upward);
     }
 
     @Override
-    public void getRightward(Float3 rightward) {
+    public void getRightward(Double3 rightward) {
         rightward.set(this.rightward);
     }
 
