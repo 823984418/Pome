@@ -26,7 +26,7 @@ public class Sphere extends BaseMesh {
         centerX = center.x;
         centerY = center.y;
         centerZ = center.z;
-        area = 4f / 3 *  Math.PI * radius * radius * radius;
+        area = 4f *  Math.PI * radius * radius;
         lightLevel = material.getLightLevel(center) * area;
     }
 
